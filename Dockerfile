@@ -7,6 +7,6 @@ WORKDIR /usr/src/app
 COPY . .
 RUN pip install -r requirements.txt
 
-EXPOSE 8000
+EXPOSE 80
 
-CMD ["gunicorn", "-b", "0.0.0.0:8000", "--workers", "1", "--threads", "4", "--worker-class", "gthread", "--log-level", "error", "app:app"]
+CMD ["gunicorn", "-b", "0.0.0.0:80", "--workers", "1", "--threads", "4", "--worker-class", "gthread", "--log-level", "error", "app:app"]
