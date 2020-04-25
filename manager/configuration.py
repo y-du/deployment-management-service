@@ -28,14 +28,8 @@ class DMConf:
         socket = "unix://var/run/docker.sock"
 
     @simple_env_var.section
-    class ContainerNetwork:
-        name = "gateway-network"
-        subnet = "10.20.0.0/16",
-        ip_range = "10.20.0.0/24",
-        gateway = "10.20.0.1"
-
-    @simple_env_var.section
     class Logger:
         level = "info"
+
 
 dm_conf = DMConf()
