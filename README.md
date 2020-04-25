@@ -1,4 +1,4 @@
-#### /deployments
+### /deployments
 
 **GET**
 
@@ -36,7 +36,7 @@ _Create a deployment._
     }
 
 
-#### /deployments/{deployment}
+### /deployments/{deployment}
 
 **PUT**
 
