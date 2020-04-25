@@ -69,6 +69,8 @@ class Deployment:
                         self.__ce_adapter.stopContainer(deployment)
                     elif data["state"] == ContainerState.stopped:
                         self.__ce_adapter.startContainer(deployment)
+                    else:
+                        raise KeyError
                     resp.status = falcon.HTTP_200
             except KeyError:
                 resp.status = falcon.HTTP_400
