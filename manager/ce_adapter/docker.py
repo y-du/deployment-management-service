@@ -102,7 +102,7 @@ class DockerAdapter(Interface):
             for container in container_objs:
                 deployments[container.name] = {
                     "image": container.image.tags[0],
-                    "hash": container.id,
+                    "hash": container.image.id,
                     "state": container_state_map[container.status]
                 }
             return deployments
