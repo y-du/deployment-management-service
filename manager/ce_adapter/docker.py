@@ -124,19 +124,26 @@ class DockerAdapter(Interface):
     def createContainer(self, name: str, dpy_conf: dict, srv_conf: typing.Optional[dict] = None, env_conf: typing.Optional[dict] = None) -> None:
         try:
             self.__client.images.pull(repository=dpy_conf["image"])
-            self.__initVolumes(name, dpy_conf["volumes"])
-            volumes = {self.__getVolName(name, volume): {"bind": target, "mode": "rw"} for volume, target in dpy_conf["volumes"].items()}
-            srv_conf = srv_conf or dict()
-            env_conf = env_conf or dict()
-            self.__client.containers.create(
-                name=name,
-                network=dm_conf.ContainerNetwork.name,
-                image=dpy_conf["image"],
-                environment={**srv_conf, **env_conf},
-                volumes=volumes,
-                ports={"{}/{}".format(port["container"], port["protocol"] or "tcp"): port["host"] for port in dpy_conf["ports"]},
-                detach=True
-            )
+            params = dict()
+            params["name"] = name
+            params["network"] = dm_conf.ContainerNetwork.name
+            params["image"] = dpy_conf["image"]
+            params["detach"] = True
+            if dpy_conf["volumes"]:
+                self.__initVolumes(name, dpy_conf["volumes"])
+                params["volumes"] = {self.__getVolName(name, volume): {"bind": target, "mode": "rw"} for volume, target in dpy_conf["volumes"].items()}
+            if dpy_conf["devices"]:
+                params["devices"] = {"{}:{}:rwm".format(device, target) for device, target in dpy_conf["devices"].items()}
+            if dpy_conf["ports"]:
+                params["ports"] = {"{}/{}".format(port["container"], port["protocol"] or "tcp"): port["host"] for port in dpy_conf["ports"]}
+            if all((srv_conf, env_conf)):
+                params["environment"] = {**srv_conf, **env_conf}
+            else:
+                if env_conf:
+                    params["environment"] = env_conf
+                if srv_conf:
+                    params["environment"] = srv_conf
+            self.__client.containers.create(**params)
         except Exception as ex:
             logger.error("can't create container '{}' - {}".format(name, ex))
             raise error_map.setdefault(ex, CEAdapterError)(ex)
