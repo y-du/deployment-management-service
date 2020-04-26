@@ -91,7 +91,7 @@ class DockerAdapter(Interface):
 
     def __purgeImages(self):
         try:
-            self.__client.images.prune()
+            self.__client.images.prune(filters={"dangling": False})
         except Exception as ex:
             logger.error("can't remove images - {]".format(ex))
 
