@@ -36,5 +36,3 @@ routes = (
 
 for route in routes:
     app.add_route(*route)
-
-# gunicorn -b 0.0.0.0:8000 --workers 1 --threads 4 --worker-class gthread --log-level error app:app
