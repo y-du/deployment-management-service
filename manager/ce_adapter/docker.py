@@ -89,6 +89,12 @@ class DockerAdapter(Interface):
                 logger.error("can't purge volume '{}' - {}".format(volume.name, ex))
                 # raise error_map.setdefault(ex, CEAdapterError)(ex)
 
+    def __purgeImages(self):
+        try:
+            self.__client.images.prune()
+        except Exception as ex:
+            logger.error("can't remove images - {]".format(ex))
+
     def listContainers(self) -> dict:
         try:
             container_objs = self.__client.containers.list(all=True)
@@ -154,6 +160,7 @@ class DockerAdapter(Interface):
             container_obj.remove()
             if purge:
                 self.__purgeVolumes(name)
+                self.__purgeImages()
         except Exception as ex:
             logger.error("can't remove deployment '{}' - {}".format(name, ex))
             raise error_map.setdefault(ex, CEAdapterError)(ex)
