@@ -26,14 +26,11 @@ class DMConf:
     @simple_env_var.section
     class CE:
         socket = "unix://var/run/docker.sock"
+        network_name = "gateway-network"
 
     @simple_env_var.section
     class Logger:
         level = "info"
-
-    @simple_env_var.section
-    class ContainerNetwork:
-        name = "gateway-network"
 
 
 dm_conf = DMConf()

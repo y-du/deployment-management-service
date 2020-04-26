@@ -126,7 +126,7 @@ class DockerAdapter(Interface):
             self.__client.images.pull(repository=dpy_conf["image"])
             params = dict()
             params["name"] = name
-            params["network"] = dm_conf.ContainerNetwork.name
+            params["network"] = dm_conf.CE.network_name
             params["image"] = dpy_conf["image"]
             params["detach"] = True
             if dpy_conf["volumes"]:
