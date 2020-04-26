@@ -31,5 +31,9 @@ class DMConf:
     class Logger:
         level = "info"
 
+    @simple_env_var.section
+    class ContainerNetwork:
+        name = "gateway-network"
+
 
 dm_conf = DMConf()
