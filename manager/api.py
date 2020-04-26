@@ -85,9 +85,9 @@ class Deployment:
                 data = json.load(req.bounded_stream)
                 if data:
                     if data["state"] == ContainerState.running:
-                        self.__ce_adapter.stopContainer(deployment)
-                    elif data["state"] == ContainerState.stopped:
                         self.__ce_adapter.startContainer(deployment)
+                    elif data["state"] == ContainerState.stopped:
+                        self.__ce_adapter.stopContainer(deployment)
                     else:
                         raise KeyError
                     resp.status = falcon.HTTP_200
