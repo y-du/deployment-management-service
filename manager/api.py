@@ -17,9 +17,21 @@
 __all__ = ("Deployments", "Deployment")
 
 
+from .logger import getLogger
 from .ce_adapter import Interface, ContainerState, CEAdapterError, NotFound
 import falcon
 import json
+
+
+logger = getLogger(__name__.split(".", 1)[-1])
+
+
+def reqDebugLog(req):
+    logger.debug("method='{}' path='{}' content_type='{}'".format(req.method, req.path, req.content_type))
+
+
+def reqErrorLog(req, ex):
+    logger.error("method='{}' path='{}' - {}".format(req.method, req.path, ex))
 
 
 class Deployments:
@@ -27,17 +39,21 @@ class Deployments:
         self.__ce_adapter = ce_adapter
 
     def on_get(self, req: falcon.request.Request, resp: falcon.response.Response):
+        reqDebugLog(req)
         try:
             items = self.__ce_adapter.listContainers()
             resp.status = falcon.HTTP_200
             resp.content_type = falcon.MEDIA_JSON
             resp.body = json.dumps(items)
-        except NotFound:
+        except NotFound as ex:
             resp.status = falcon.HTTP_404
-        except CEAdapterError:
+            reqErrorLog(req, ex)
+        except Exception as ex:
             resp.status = falcon.HTTP_500
+            reqErrorLog(req, ex)
 
     def on_post(self, req: falcon.request.Request, resp: falcon.response.Response):
+        reqDebugLog(req)
         if not req.content_type == falcon.MEDIA_JSON:
             resp.status = falcon.HTTP_415
         else:
@@ -48,10 +64,12 @@ class Deployments:
                         self.__ce_adapter.removeContainer(data["name"])
                     self.__ce_adapter.createContainer(data["name"], data["deployment_configs"], data.get("service_configs"), data.get("runtime_vars"))
                     resp.status = falcon.HTTP_200
-            except KeyError:
+            except KeyError as ex:
                 resp.status = falcon.HTTP_400
-            except CEAdapterError:
+                reqErrorLog(req, ex)
+            except Exception as ex:
                 resp.status = falcon.HTTP_500
+                reqErrorLog(req, ex)
 
 
 class Deployment:
@@ -59,6 +77,7 @@ class Deployment:
         self.__ce_adapter = ce_adapter
 
     def on_put(self, req: falcon.request.Request, resp: falcon.response.Response, deployment):
+        reqDebugLog(req)
         if not req.content_type == falcon.MEDIA_JSON:
             resp.status = falcon.HTTP_415
         else:
@@ -72,18 +91,24 @@ class Deployment:
                     else:
                         raise KeyError
                     resp.status = falcon.HTTP_200
-            except KeyError:
+            except KeyError as ex:
                 resp.status = falcon.HTTP_400
-            except NotFound:
+                reqErrorLog(req, ex)
+            except NotFound as ex:
                 resp.status = falcon.HTTP_404
-            except CEAdapterError:
+                reqErrorLog(req, ex)
+            except Exception as ex:
                 resp.status = falcon.HTTP_500
+                reqErrorLog(req, ex)
 
     def on_delete(self, req: falcon.request.Request, resp: falcon.response.Response, deployment):
+        reqDebugLog(req)
         try:
             self.__ce_adapter.removeContainer(deployment, purge=True)
             resp.status = falcon.HTTP_200
-        except NotFound:
+        except NotFound as ex:
             resp.status = falcon.HTTP_404
-        except CEAdapterError:
+            reqErrorLog(req, ex)
+        except Exception as ex:
             resp.status = falcon.HTTP_500
+            reqErrorLog(req, ex)
