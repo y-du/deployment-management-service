@@ -9,7 +9,7 @@ _List all deployments._
     {
       "image": <string>,
       "hash": <string>,
-      "state": <string>     # "active", "inactive"
+      "state": <string>     # "running", "stopped"
     }
 
 **POST**
@@ -23,6 +23,7 @@ _Create a deployment._
       "deployment_configs": {
         "image": <string>,
         "volumes": {<string>:<string>},
+        "devices": {<string>:<string>},
         "ports": [
           {
             "container": <number>,
