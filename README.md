@@ -46,7 +46,7 @@ _Start / stop deployment._
     Request media type: application/json
     
     {
-      "state": <string>     # "active", "inactive"
+      "state": <string>     # "running", "stopped"
     }
 
 **DELETE**

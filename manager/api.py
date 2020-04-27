@@ -59,11 +59,10 @@ class Deployments:
         else:
             try:
                 data = json.load(req.bounded_stream)
-                if data:
-                    if data["name"] in self.__ce_adapter.listContainers():
-                        self.__ce_adapter.removeContainer(data["name"])
-                    self.__ce_adapter.createContainer(data["name"], data["deployment_configs"], data.get("service_configs"), data.get("runtime_vars"))
-                    resp.status = falcon.HTTP_200
+                if data["name"] in self.__ce_adapter.listContainers():
+                    self.__ce_adapter.removeContainer(data["name"])
+                self.__ce_adapter.createContainer(data["name"], data["deployment_configs"], data.get("service_configs"), data.get("runtime_vars"))
+                resp.status = falcon.HTTP_200
             except KeyError as ex:
                 resp.status = falcon.HTTP_400
                 reqErrorLog(req, ex)
@@ -83,14 +82,13 @@ class Deployment:
         else:
             try:
                 data = json.load(req.bounded_stream)
-                if data:
-                    if data["state"] == ContainerState.running:
-                        self.__ce_adapter.startContainer(deployment)
-                    elif data["state"] == ContainerState.stopped:
-                        self.__ce_adapter.stopContainer(deployment)
-                    else:
-                        raise KeyError
-                    resp.status = falcon.HTTP_200
+                if data["state"] == ContainerState.running:
+                    self.__ce_adapter.startContainer(deployment)
+                elif data["state"] == ContainerState.stopped:
+                    self.__ce_adapter.stopContainer(deployment)
+                else:
+                    raise KeyError
+                resp.status = falcon.HTTP_200
             except KeyError as ex:
                 resp.status = falcon.HTTP_400
                 reqErrorLog(req, ex)

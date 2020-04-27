@@ -34,8 +34,8 @@ class NotFound(CEAdapterError):
 
 
 class ContainerState:
-    running = "active"
-    stopped = "inactive"
+    running = "running"
+    stopped = "stopped"
 
 
 class Interface(metaclass=abc.ABCMeta):
