@@ -38,7 +38,7 @@ _Create a deployment._
 
 ### /deployments/{deployment}
 
-**PUT**
+**PATCH**
 
 _Start / stop deployment._
 
@@ -46,8 +46,6 @@ _Start / stop deployment._
     Request media type: application/json
     
     {
-      "image": <string>,
-      "hash": <string>,
       "state": <string>     # "active", "inactive"
     }
 

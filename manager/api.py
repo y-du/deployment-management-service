@@ -76,7 +76,7 @@ class Deployment:
     def __init__(self, ce_adapter: Interface):
         self.__ce_adapter = ce_adapter
 
-    def on_put(self, req: falcon.request.Request, resp: falcon.response.Response, deployment):
+    def on_patch(self, req: falcon.request.Request, resp: falcon.response.Response, deployment):
         reqDebugLog(req)
         if not req.content_type == falcon.MEDIA_JSON:
             resp.status = falcon.HTTP_415
