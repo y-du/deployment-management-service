@@ -42,9 +42,9 @@ class Deployments:
         reqDebugLog(req)
         try:
             items = self.__ce_adapter.listContainers()
-            resp.status = falcon.HTTP_200
             resp.content_type = falcon.MEDIA_JSON
             resp.body = json.dumps(items)
+            resp.status = falcon.HTTP_200
         except NotFound as ex:
             resp.status = falcon.HTTP_404
             reqErrorLog(req, ex)
