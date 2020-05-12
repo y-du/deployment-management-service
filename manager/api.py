@@ -60,11 +60,14 @@ class Deployments:
             try:
                 data = json.load(req.bounded_stream)
                 if data["name"] in self.__ce_adapter.listContainers():
-                    self.__ce_adapter.removeContainer(data["name"])
+                    raise RuntimeError("container '{}' already exists".format(data["name"]))
                 self.__ce_adapter.createContainer(data["name"], data["deployment_configs"], data.get("service_configs"), data.get("runtime_vars"))
                 resp.status = falcon.HTTP_200
             except KeyError as ex:
                 resp.status = falcon.HTTP_400
+                reqErrorLog(req, ex)
+            except RuntimeError as ex:
+                resp.status = falcon.HTTP_409
                 reqErrorLog(req, ex)
             except Exception as ex:
                 resp.status = falcon.HTTP_500
@@ -102,10 +105,19 @@ class Deployment:
     def on_delete(self, req: falcon.request.Request, resp: falcon.response.Response, deployment):
         reqDebugLog(req)
         try:
-            self.__ce_adapter.removeContainer(deployment, purge=True)
+            if req.params and "option" in req.params:
+                if req.params["option"] == "purge":
+                    self.__ce_adapter.removeContainer(deployment, purge=True)
+                else:
+                    raise RuntimeError("unknown option '{}'".format(req.params["option"]))
+            else:
+                self.__ce_adapter.removeContainer(deployment, purge=False)
             resp.status = falcon.HTTP_200
         except NotFound as ex:
             resp.status = falcon.HTTP_404
+            reqErrorLog(req, ex)
+        except RuntimeError as ex:
+            resp.status = falcon.HTTP_400
             reqErrorLog(req, ex)
         except Exception as ex:
             resp.status = falcon.HTTP_500
